@@ -1,229 +1,184 @@
-//CDIBEAN
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSF/JSFManagedBean.java to edit this template
- */
-package cdibean;
+using System;
+using System.Collections.Generic;
 
-import ejb.VehiclepartsFacade;
-import entity.Vehicleparts;
-import javax.inject.Named;
-import javax.enterprise.context.SessionScoped;
-import java.io.Serializable;
-import java.util.List;
-import javax.ejb.EJB;
+// Define the generic interface for CRUD operations
+public interface ICrudOperations<T>
+{
+    void Add(T item);
+    void Update(T item);
+    void Delete(T item);
+    void DisplayAll();
+}
 
-/**
- *
- * @author Dell
- */
-@Named(value = "vihiclesparts")
-@SessionScoped
-public class vihiclesparts implements Serializable {
+// Define the Student class
+public class Student
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
 
-    @EJB
-    private VehiclepartsFacade vehiclepartsFacade;
+// Define the Teacher class
+public class Teacher
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
 
-    private Vehicleparts vehiclesparts = new Vehicleparts();
-    
-    /**
-     * Creates a new instance of vihiclesparts
-     */
-    public vihiclesparts() {
+// Define the Course class
+public class Course
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+
+// Implement the generic interface in a class
+public class CrudOperations<T> : ICrudOperations<T>
+{
+    private List<T> itemList;
+
+    public CrudOperations()
+    {
+        itemList = new List<T>();
     }
 
-    public Vehicleparts getVehiclesparts() {
-        return vehiclesparts;
+    public void Add(T item)
+    {
+        itemList.Add(item);
+        Console.WriteLine("Item added successfully.");
     }
 
-    public void setVehiclesparts(Vehicleparts vehiclesparts) {
-        this.vehiclesparts = vehiclesparts;
-    }
-    
-   
-    
-    public List<Vehicleparts> findall(){
-        return this.vehiclepartsFacade.findAll();
-    }
-    
-    public String addparts(){
-        this.vehiclepartsFacade.create(vehiclesparts);
-        this.vehiclesparts = new Vehicleparts();
-        return"vihiclesparts";
+    public void Update(T item)
+    {
+        // Implement update logic based on your requirements
+        Console.WriteLine("Item updated successfully.");
     }
 
-   
-    
-    public String editparts(Vehicleparts v){
-     this.vehiclesparts=v;
-     return "vihiclesparts";
+    public void Delete(T item)
+    {
+        itemList.Remove(item);
+        Console.WriteLine("Item deleted successfully.");
     }
-    
-    public String updateparts(){
-        this.vehiclepartsFacade.edit(vehiclesparts);
-        this.vehiclesparts=vehiclesparts;
-        return"vihiclesparts";
-    }
-    
-    public void Removeparts(Vehicleparts vehiclesparts){
-        this.vehiclepartsFacade.remove(vehiclesparts);
+
+    public void DisplayAll()
+    {
+        Console.WriteLine("Items in the list:");
+        foreach (var item in itemList)
+        {
+            Console.WriteLine(item);
+        }
     }
 }
 
+class Program
+{
+    static void Main()
+    {
+        // Create instances of CrudOperations for each type
+        var studentCrud = new CrudOperations<Student>();
+        var teacherCrud = new CrudOperations<Teacher>();
+        var courseCrud = new CrudOperations<Course>();
 
-//table
- <h:dataTable value="#{vihiclesparts.findall()}" var="item" styleClass="data-table">
-         <h:column>
-            <f:facet name="header"> ID</f:facet>
-            #{item.partId}
-        </h:column>
-        <h:column>
-            <f:facet name="header">Part Name</f:facet>
-            #{item.name}
-        </h:column>
-        <h:column>
-            <f:facet name="header">Description</f:facet>
-            #{item.description}
-        </h:column>         
-        <h:column>
-            <f:facet name="header">Amount</f:facet>
-            #{item.price}
-        </h:column>        
-        <h:column>
-            <f:facet name="header">Action</f:facet>
-            <h:commandLink style="color: #00ff00" value="update" action="#{vihiclesparts.editparts(item)}" />
-        </h:column>
-        <h:column>
-            <f:facet name="header">Action</f:facet>
-            <h:commandLink style="color: #ff3300" value="Delete" action="#{vihiclesparts.Removeparts(item)}"/>
-        </h:column>        
-    </h:dataTable>
+        int choice;
+        do
+        {
+            Console.WriteLine("\nMenu:");
+            Console.WriteLine("1. Add");
+            Console.WriteLine("2. Update");
+            Console.WriteLine("3. Delete");
+            Console.WriteLine("4. Display All");
+            Console.WriteLine("5. Exit");
 
-//form
- <h:outputLabel for="partsid" style="font-size: 20px; color: black;">Part Id</h:outputLabel>
-        <h:inputText id="serviceName1" value="#{vihiclesparts.vehiclesparts.partId}" class="textbox" required="true"  style="font-size: 16px"/>
-        
-        <h:outputLabel for="serviceDescription" style="font-size: 20px; color: black;">Part Name</h:outputLabel>
+            Console.Write("Enter your choice (1-5): ");
+            if (int.TryParse(Console.ReadLine(), out choice))
+            {
+                switch (choice)
+                {
+                    case 1:
+                        Console.WriteLine("\nEnter details:");
+                        Console.Write("ID: ");
+                        int id = int.Parse(Console.ReadLine());
+                        Console.Write("Name: ");
+                        string name = Console.ReadLine();
 
-        
-        <h:inputText id="serviceName" value="#{vihiclesparts.vehiclesparts.name}" class="textbox" required="true"  style="font-size: 16px"/>
-                  
-        <h:outputLabel for="serviceDescription" style="font-size: 20px; color: black;">Amount</h:outputLabel>
-       
-        <h:inputText id="amount" value="#{vihiclesparts.vehiclesparts.price}" class="textboxamount" required="true"  style="font-size: 16px"/>
-            
-        
-        <h:outputLabel for="serviceDescription" style="font-size: 20px; color: black;">Description</h:outputLabel>
-        
-        <h:inputText id="duration" value="#{vihiclesparts.vehiclesparts.description}" class="textboxid" style="font-size: 16px" title="Duration" />
-                  
-        
-        <h:commandButton value="Submit" action="#{vihiclesparts.addparts()}" styleClass="custombutton" />
-        <h:commandButton value="Upadte" action="#{vihiclesparts.updateparts()}" styleClass="custombutton"/>
+                        Console.WriteLine("\nSelect type:");
+                        Console.WriteLine("1. Student");
+                        Console.WriteLine("2. Teacher");
+                        Console.WriteLine("3. Course");
+                        Console.Write("Enter your choice (1-3): ");
+                        int typeChoice = int.Parse(Console.ReadLine());
 
+                        switch (typeChoice)
+                        {
+                            case 1:
+                                studentCrud.Add(new Student { Id = id, Name = name });
+                                break;
+                            case 2:
+                                teacherCrud.Add(new Teacher { Id = id, Name = name });
+                                break;
+                            case 3:
+                                courseCrud.Add(new Course { Id = id, Name = name });
+                                break;
+                            default:
+                                Console.WriteLine("Invalid choice");
+                                break;
+                        }
+                        break;
 
+                    case 2:
+                        // Implement update logic based on your requirements
+                        Console.WriteLine("Update operation not implemented in this example.");
+                        break;
 
+                    case 3:
+                        Console.WriteLine("\nEnter details to delete:");
+                        Console.Write("ID: ");
+                        int deleteId = int.Parse(Console.ReadLine());
 
+                        Console.WriteLine("\nSelect type to delete:");
+                        Console.WriteLine("1. Student");
+                        Console.WriteLine("2. Teacher");
+                        Console.WriteLine("3. Course");
+                        Console.Write("Enter your choice (1-3): ");
+                        int deleteTypeChoice = int.Parse(Console.ReadLine());
 
-//userlcdi
-public List<User> findall(){
-    
-       return this.userFacade.findAll();
+                        switch (deleteTypeChoice)
+                        {
+                            case 1:
+                                studentCrud.Delete(new Student { Id = deleteId });
+                                break;
+                            case 2:
+                                teacherCrud.Delete(new Teacher { Id = deleteId });
+                                break;
+                            case 3:
+                                courseCrud.Delete(new Course { Id = deleteId });
+                                break;
+                            default:
+                                Console.WriteLine("Invalid choice");
+                                break;
+                        }
+                        break;
+
+                    case 4:
+                        Console.WriteLine("\nDisplaying all items:");
+                        studentCrud.DisplayAll();
+                        teacherCrud.DisplayAll();
+                        courseCrud.DisplayAll();
+                        break;
+
+                    case 5:
+                        Console.WriteLine("Exiting the program.");
+                        break;
+
+                    default:
+                        Console.WriteLine("Invalid choice. Please enter a number between 1 and 5.");
+                        break;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid input. Please enter a number.");
+            }
+
+        } while (choice != 5);
     }
-    
-    public String adduser(){
-    
-        this.userFacade.create(user);
-        this.user = new User();
-         updateCustomers();
-        updateTotalCustomers();
-        return "customers";
-    }
-    
-    public String update(User u){
-        this.user =u;
-        return"customers";
-    }
-    public String updateu(){
-        this.userFacade.edit(user);
-        this.user = user;
-        return"customers";
-    }
-    
-    public void delet(User user){
-        this.userFacade.remove(user);
-    }
-    
-    
-    
-    private int loggedInUserId;
-    
-    
-    public boolean login(String username, String password) {
-        User user = userFacade.findUserByUsernameAndPassword(username, password);
-        if (user != null) {
-            loggedInUserId = user.getUserid();
-            return true; // Successful login
-        }
-        return false; // Login failed
-    }
-
-//login
-
-  @Inject
-    private usercdi usercdi;
-
-    
-    private bookingcdi bookingcdi;
-    
-    
-    
-    /**
-     * Creates a new instance of loginbean
-     */
-    public loginbean() {
-    }
-    
-    
-     private String username;
-    private String password;
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    
-    public String login() {
-        if (usercdi.login(username, password)) {
-            return "home.jsf";
-        } else {
-            // Handle login failure
-            return "login.xhtml";
-        }
-    }
-
-
-
-//ejbacade
-   public User findUserByUsernameAndPassword(String username, String password) {
-        try {
-            return em.createQuery(
-                    "SELECT u FROM User u WHERE u.username = :username AND u.password = :password", User.class)
-                    .setParameter("username", username)
-                    .setParameter("password", password)
-                    .getSingleResult();
-        } catch (NoResultException e) {
-            return null; // User not found
-        }
-    }
+}
