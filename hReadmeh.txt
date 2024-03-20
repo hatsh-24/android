@@ -1,422 +1,246 @@
-Scaffold-DbContext "Data Source=laptop-8tcmrkva;Initial Catalog=InterestFinder;Integrated Security=True;Trust Server Certificate=True" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models
+//helper
 
-"AllowedHosts": "*",
-"ConnectioinStrings":{
-  "DBConnection":"Data Source=Sanket\\SQLEXPRESS;Initial Catalog=test;Integrated Security=True;Encrypt=True;Trust Server Certificate=True"
-}
+package database
 
-builder.Services.AddDbContext<TestContext>(
-    s => s.UseSqlServer(builder.Configuration.GetConnectionString("DBConnection")));
-
-
-////////////////////////////Api//////////////////////////////////////////////////////////////////////////
-nuggate packet 1.tools,2Sqlserver,3Frameworkcore
-
-context:-
-first comment 2 lines
-
-CongfigurationBuilder confBuilder = new CongfigurationBuilder()
-	optionBuilder.UseSqlserver(confBuilder.Build).GetConnectionString("DBConnectionString"));
-
- Program.cs:-
-Add Coneection String 
--Rebuild
-
-Create Api Controller
-
-Api Will Created <=Copy Url
+import android.content.ContentValues
+import android.content.Context
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
+import android.widget.Toast
 
 
-Crate a New MVC Project
-nuggate packet =>newtonsoft.json
+class sqlitehelper(context: Context):SQLiteOpenHelper(context, dbname,null, dbversion) {
 
-crate a mode class
-Create Same Properties AS We Have In DB or In Api Url
-
-Add Controller:-
-regulare Read/Write Controller OF Author
-
-public string baseUrlTeacher = "http://localhost:5074/api/Teachers";
-
-HttpClient client = new HttpClient();
-
------------------
- public async Task<Teacher> GetTeacherById(int id)
- {
-     var ResponseValue = await client.GetAsync(baseUrlTeacher + "/" + id.ToString());
-     var response = await ResponseValue.Content.ReadAsStringAsync();
-     var teacher = JsonConvert.DeserializeObject<Teacher>(response);
-     return teacher;
- }
-
- public async Task<IEnumerable<Teacher>> GetTeacherByName(string tname)
- {
-     var ResponseValue = await client.GetAsync(baseUrlTeacher + "/designation/" + tname.ToString());
-     var response = await ResponseValue.Content.ReadAsStringAsync();
-     var teacher = JsonConvert.DeserializeObject<List<Teacher>>(response);
-     return teacher;
- }
-
----------------------
-
- // GET: TeacherController
- public async Task<ActionResult> Index()
- {
-     var ResponseValue = await client.GetAsync(baseUrlTeacher);
-     var response = await ResponseValue.Content.ReadAsStringAsync();
-     var listTeachers = JsonConvert.DeserializeObject<List<Teacher>>(response);
-     return View(listTeachers);
- }
-
- // GET: TeacherController/Details/5
- public async Task<ActionResult> Details(int id)
- {
-     var teacher = await GetTeacherById(id);
-     return View(teacher);
- }
-----------------------------------------
-// GET: TeacherController/Search
-public ActionResult Search()
-{
-    return View();
-}
-
-// POST: TeacherController/Search
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<ActionResult> Search(string tname)
-{
-    try
-    {
-        var teacher = await GetTeacherByName(tname);
-        return View(teacher);
+    companion object{
+        private  val dbname="dbschool"
+        private  val dbversion =1
+        private  val tblname="tblstudent"
+        private val column1="id"
+        private val column2="name"
     }
-    catch
+
+    override fun equals(other: Any?): Boolean {
+        return super.equals(other)
+    }
+
+    override fun onCreate(db: SQLiteDatabase?) {
+       var query = "CREATE TABLE $tblname ($column1 INTEGER PRIMARY KEY,$column2 TEXT)"
+        db?.execSQL(query)
+    }
+
+    override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
+        var query = "DROP TABLE $tblname"
+        db?.execSQL(query)
+        onCreate(db)
+    }
+
+    fun addstud(student: student):Boolean
     {
-        return View();
+        val db = this.writableDatabase
+        val values = ContentValues()
+        values.put(column1,student.id)
+        values.put(column2,student.name)
+
+        var result = db.insert(tblname,null,values)
+
+        if(result.toInt() ==-1)
+        {
+            return false
+        }else
+        {
+            return true
+        }
+    }
+    fun deletestud(id: Int):Boolean
+    {
+        val db = this.writableDatabase
+
+        var result = db.delete(tblname,"id="+id, null)
+
+        if (result == -1)
+        {
+            return false
+        }else{
+            return true
+        }
+    }
+
+    fun editstud(student: student):Boolean
+    {
+        var db = this.writableDatabase
+        val values = ContentValues()
+        values.put(column1,student.id)
+        values.put(column2,student.name)
+
+        var result = db.update(tblname,values,"id="+student.id,null)
+        if (result == -1)
+        {
+            return false
+        }
+        else
+        {
+            return true
+        }
+    }
+
+    fun display():ArrayList<student>{
+        val data = ArrayList<student>()
+        val db = this.readableDatabase
+        val query = "SELECT * FROM $tblname"
+        val cursor = db.rawQuery(query,null)
+        cursor.use {
+            while (cursor.moveToNext())
+            {
+                val idIndex = cursor.getColumnIndex(column1)
+                val nameIndex = cursor.getColumnIndex(column2)
+                if (idIndex != -1 && nameIndex != -1) {
+                    val id = cursor.getInt(idIndex)
+                    val name = cursor.getString(nameIndex)
+                    val student = student(id,name)
+                    data.add(student)
+                }else{
+                    Log.e("tblname", "Column $column1 not found in cursor")
+                }
+            }
+        }
+        cursor.close()
+        return data
+    }
+
+    fun checkuser(name: String):Boolean
+    {
+        val db = this.readableDatabase
+        val query = "SELECT * FROM $tblname where  $column2 = ?"
+        val cursor = db.rawQuery(query, arrayOf(name))
+        val count = cursor.count
+        cursor.close()
+        return count > 0
     }
 }
 
 
 
-//....................Android ...///////////
+//dataaclass
+package database
 
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using MVC_API___Prc1.Models;
-using Newtonsoft.Json;
-using System.Drawing.Imaging;
-using System.Text;
-using System.Text.Json.Serialization;
+data class student(var id:Int, var name:String){
 
-namespace MVC_API___Prc1.Controllers
-{
-    public class TeacherController : Controller
-    {
-        public string baseUrlTeacher = "http://localhost:5074/api/Teachers";
 
-        HttpClient client = new HttpClient();
 
-        public async Task<Teacher> GetTeacherById(int id)
-        {
-            var ResponseValue = await client.GetAsync(baseUrlTeacher + "/" + id.ToString());
-            var response = await ResponseValue.Content.ReadAsStringAsync();
-            var teacher = JsonConvert.DeserializeObject<Teacher>(response);
-            return teacher;
-        }
 
-        public async Task<IEnumerable<Teacher>> GetTeacherByName(string tname)
-        {
-            var ResponseValue = await client.GetAsync(baseUrlTeacher + "/designation/" + tname.ToString());
-            var response = await ResponseValue.Content.ReadAsStringAsync();
-            var teacher = JsonConvert.DeserializeObject<List<Teacher>>(response);
-            return teacher;
-        }
+}
 
-        // GET: TeacherController
-        public async Task<ActionResult> Index()
-        {
-            var ResponseValue = await client.GetAsync(baseUrlTeacher);
-            var response = await ResponseValue.Content.ReadAsStringAsync();
-            var listTeachers = JsonConvert.DeserializeObject<List<Teacher>>(response);
-            return View(listTeachers);
-        }
 
-        // GET: TeacherController/Details/5
-        public async Task<ActionResult> Details(int id)
-        {
-            var teacher = await GetTeacherById(id);
-            return View(teacher);
-        }
 
-        // GET: TeacherController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
+//main
+package com.example.sqlitecrud
 
-        // POST: TeacherController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(Teacher teacher)
-        {
-            try
-            {
-                var jsonData = JsonConvert.SerializeObject(teacher);
-                var ResponseData = await client.PostAsync(baseUrlTeacher, new StringContent(jsonData, Encoding.UTF8, "application/json"));
-                Console.WriteLine(ResponseData);
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ListView
+import android.widget.Toast
+import database.sqlitehelper
+import database.student
 
-        // GET: TeacherController/Search
-        public ActionResult Search()
-        {
-            return View();
-        }
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-        // POST: TeacherController/Search
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Search(string tname)
-        {
-            try
-            {
-                var teacher = await GetTeacherByName(tname);
-                return View(teacher);
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        var txtid:EditText = findViewById(R.id.id)
+        var txtname:EditText = findViewById(R.id.name)
+        var add:Button = findViewById(R.id.add)
+        val sqlitehelper = sqlitehelper(this)
+        val dele:Button = findViewById(R.id.Delete)
+        val edit:Button = findViewById(R.id.Edit)
+        val display:Button = findViewById(R.id.Display)
 
-        // GET: TeacherController/Edit/5
-        public async Task<ActionResult> Edit(int id)
-        {
-            var teacher = await GetTeacherById(id);
-            return View(teacher);
-        }
+        add.setOnClickListener(View.OnClickListener {
+            var id = Integer.parseInt(txtid.text.toString())
+            var name = txtname.text.toString()
 
-        // POST: TeacherController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(int id, Teacher teacher)
-        {
-            try
-            {
-                var jsonData = JsonConvert.SerializeObject(teacher);
-                var ResponseData = await client.PutAsync(baseUrlTeacher + "/" + id.ToString(), new StringContent(jsonData, Encoding.UTF8, "application/json"));
-                Console.WriteLine(ResponseData);
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+            var result = sqlitehelper.addstud(student(id,name))
 
-        // GET: TeacherController/Delete/5
-        public async Task<ActionResult> Delete(int id)
-        {
-            var teacher = await GetTeacherById(id);
-            return View(teacher);
-        }
+            if (result == true)
+                Toast.makeText(this,"Inserted Succesfull",Toast.LENGTH_LONG).show()
+        })
+        dele.setOnClickListener(View.OnClickListener {
+            var id = Integer.parseInt(txtid.text.toString())
 
-        // POST: TeacherController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Delete(int id, Teacher teacher)
-        {
-            try
-            {
-                var jsonData = JsonConvert.SerializeObject(teacher);
-                var ResponseData = await client.DeleteAsync(baseUrlTeacher + "/" + id.ToString());
-                Console.WriteLine(ResponseData);
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+            var result = sqlitehelper.deletestud(id)
+
+            if(result == true)
+                Toast.makeText(this,"Deleted Succesully",Toast.LENGTH_LONG).show()
+        })
+        edit.setOnClickListener(View.OnClickListener {
+            var id = Integer.parseInt(txtid.text.toString())
+            var name = txtname.text.toString()
+            var result = sqlitehelper.editstud(student(id,name))
+            if (result == true)
+                Toast.makeText(this,"Edited",Toast.LENGTH_LONG).show()
+        })
+        display.setOnClickListener(View.OnClickListener {
+            val listview = findViewById<ListView>(R.id.listview)
+            val data = sqlitehelper.display()
+
+            val adapter = ArrayAdapter(this,android.R.layout.simple_list_item_1,data)
+            listview.adapter = adapter
+
+
+        })
+
+        val logout:Button = findViewById(R.id.Logout)
+
+        logout.setOnClickListener(View.OnClickListener {
+            val intent = Intent(this,Login::class.java)
+            startActivity(intent)
+        })
     }
 }
 
 
 
 
+/////
 
+package com.example.sqlitecrud
 
-//
+import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.view.View
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
+import database.sqlitehelper
 
+class Login : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_login)
 
+       val username:EditText = findViewById(R.id.username)
+       val login:Button = findViewById(R.id.login)
 
-using Employeecrud.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+       val sqlitehelper = sqlitehelper(this)
 
-namespace Employeecrud.Controllers
-{
-    public class EmployeeController : Controller
-    {
-        private static List<Employee> employees = new List<Employee>();
-
-        public EmployeeController() 
-        {
-            if(employees.Count <1)
+        login.setOnClickListener(View.OnClickListener {
+            var username = username.text.toString()
+            val isvalidate = sqlitehelper.checkuser(username)
+            if (isvalidate)
             {
-                employees.Add(new Employee { EmpId = 1, EmpName = "sanket", Designation = "Oprator", Age = 21 });
-
-                employees.Add(new Employee { EmpId = 2, EmpName = "Hatsh", Designation = "Hr", Age = 24 });
-
-                employees.Add(new Employee { EmpId = 3, EmpName = "Dev", Designation = "Manager", Age = 23 });
-
-                employees.Add(new Employee { EmpId = 4, EmpName = "vishv", Designation = "Hr", Age = 22 });
+                val intent = Intent(this,MainActivity::class.java)
+                startActivity(intent)
+            }else {
+                Toast.makeText(this,"Invalid Crediantial ",Toast.LENGTH_LONG).show()
             }
-        }
 
-        // GET: EmployeeController
-        public ActionResult Index()
-        {
-            return View(employees.ToList());
-        }
-
-        // GET: EmployeeController/Details/5
-        public ActionResult Details(int id)
-        {
-            Employee employee = (from e in employees
-                                 where e.EmpId == id
-                                 select e).First();
-
-            return View(employee);
-        }
-
-        // GET: EmployeeController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: EmployeeController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: EmployeeController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            var empToEdit = employees.SingleOrDefault(e=>e.EmpId == id);
-            return View(empToEdit);
-        }
-
-        // POST: EmployeeController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, Employee editEmpoyee)
-        {
-            try
-            {
-                var empToEdit = employees.SingleOrDefault(e=>e.EmpId == id);
-
-                empToEdit.EmpName = editEmpoyee.EmpName;
-                empToEdit.Designation = editEmpoyee.Designation;
-                empToEdit.Age = editEmpoyee.Age;
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: EmployeeController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            var empTODelete = employees.SingleOrDefault(e=>e.EmpId == id);
-
-            return View(empTODelete);
-        }
-
-        // POST: EmployeeController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                var EmpToDelete = employees.SingleOrDefault(e=>e.EmpId == id);
-
-                employees.Remove(EmpToDelete);
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        public ActionResult Search() { return View(); }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Search(Employee emptosearch)
-        {
-            try
-            {
-                // return RedirectToAction(nameof(Index));
-                return RedirectToAction(nameof(searchResult), new
-                {
-                    searchByAge = emptosearch.Age,
-                    name = emptosearch.EmpName
-                });
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        public ActionResult searchResult(int searchByAge, String name)
-        {
-            var searchResult = from e in employees
-                               where e.Age > searchByAge
-                               && e.EmpName.Contains(name)
-                               select e;
-
-            return View(searchResult.ToList());
-        }
-
-        public IActionResult Login()
-        { return View(); }
-
-        public IActionResult Login(string username, string password)
-        {
-            var existinguser = employees.FirstOrDefault(e => e.EmpName.Equals(username) && e.Designation.Equals(password) );
-            if(existinguser != null)
-            {
-                return View(existinguser);
-            }
-            return RedirectToAction("Index");
-
-        }
+        })
     }
 }
-
-
-
