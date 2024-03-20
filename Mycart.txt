@@ -97,6 +97,12 @@ public async Task<ActionResult> Search(string tname)
     }
 }
 
+//Edit
+var ResponseData = await client.PutAsync(baseUrlTeacher + "/" + id.ToString(), new StringContent(jsonData, Encoding.UTF8, "application/json"));
+
+//Delete
+var ResponseData = await client.DeleteAsync(baseUrlTeacher + "/" + id.ToString());
+
 
 
 
