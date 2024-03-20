@@ -102,7 +102,7 @@ var ResponseData = await client.PutAsync(baseUrlTeacher + "/" + id.ToString(), n
 
 //Delete
 var ResponseData = await client.DeleteAsync(baseUrlTeacher + "/" + id.ToString());
-
+.
 
 
 
