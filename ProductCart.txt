@@ -1,0 +1,202 @@
+------------------------------------
+data class student(var id:Int , var name:String,var email:String)
+
+class sqlitehelper (context : Context): SQLiteOpenHelper(context , dbname , null , dbversion) {
+    companion object {
+        private val dbname = "dbschool"
+        private val dbversion = 1
+        private val tblname = "tblstudent"
+        private val column1 = "id"
+        private val column2 = "name"
+        private val column3 = "email"
+    }
+
+    override fun onCreate(db: SQLiteDatabase?) {
+        var query =
+            "CREATE TABLE $tblname ($column1 INTEGER PRIMARY KEY , $column2 TEXT , $column3 TEXT )"
+        db?.execSQL(query)
+    }
+
+    override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
+        var query = "DROP TABLE $tblname"
+        db?.execSQL(query)
+        onCreate(db)
+    }
+
+    fun addstudent(studentlist: student): Boolean
+    {
+        val databasee = this.writableDatabase
+        val values = ContentValues()
+        values.put(column1, studentlist.id)
+        values.put(column2, studentlist.name)
+        values.put(column3, studentlist.email)
+        var result = databasee.insert(tblname, null, values)
+        if (result.toInt() == -1)
+        {
+            return false
+        }
+        else
+        {
+            return true
+        }
+    }
+
+    fun deleteStudent(Id: Int): Boolean {
+        val database = this.writableDatabase
+        val whereClause = "$column1 = ?"
+        val whereArgs = arrayOf(Id.toString())
+        val result = database.delete(tblname, whereClause, whereArgs)
+        database.close()
+        return result > 0
+    }
+
+    fun EditStudent(student: student):Boolean
+    {
+        val databasee = this.writableDatabase
+        val values = ContentValues()
+        values.put(column1, student.id)
+        values.put(column2, student.name)
+        values.put(column3, student.email)
+        var result = databasee.update(tblname,values,"id="+student.id,null)
+        if (result.toInt() == -1)
+        {
+            return false
+        }
+        else
+        {
+            return true
+        }
+    }
+
+    fun checkuser(Name:String , Email:String):Boolean{
+        val database= this.writableDatabase
+        val query="SELECT * FROM  $tblname WHERE $column2=? AND $column3=?"
+        val cursor : Cursor = database.rawQuery(query , arrayOf(Name , Email))
+        return cursor.count>0
+    }
+
+    fun Display():ArrayList<student>{
+        val data= ArrayList<student>()
+        val database= this.writableDatabase
+        val query="SELECT * FROM  $tblname"
+        val cursor = database.rawQuery(query,null)
+        cursor.use {
+            while (cursor.moveToNext())
+            {
+                val idIndex=cursor.getColumnIndex(column1)
+                val nameIndex=cursor.getColumnIndex(column2)
+                val emailIndex=cursor.getColumnIndex(column3)
+                if (idIndex!=-1 && nameIndex!=-1 && emailIndex!=-1)
+                {
+                    val id = cursor.getInt(idIndex)
+                    val name = cursor.getString(nameIndex)
+                    val email = cursor.getString(emailIndex)
+                    val student = student(id,name,email)
+                    data.add(student)
+                }else{
+                    Log.e("tblname","column $column1 not found in cursor")
+                }
+            }
+        }
+        cursor.close()
+        return data
+    }
+}
+---------------------------------------------------------------
+
+
+ val txtid:EditText= findViewById(R.id.id)
+
+val sqlitehelper = sqlitehelper(this)
+
+   val add = findViewById<Button>(R.id.submit)
+
+        val listView:ListView = findViewById(R.id.listview)
+
+        add.setOnClickListener {
+            val id = Integer.parseInt(txtid.text.toString())
+            val name = txtname.text.toString()
+            val email = txtemail.text.toString()
+            var result = sqlitehelper.addstudent(student(id, name, email))
+            if (result == true) {
+                Toast.makeText(this, "sucessfull", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "error", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        update.setOnClickListener{
+            val id = Integer.parseInt(txtid.text.toString())
+            val name= txtname.text.toString()
+            val email= txtemail.text.toString()
+            var result = sqlitehelper.EditStudent(student(id , name , email))
+            if (result==true) {
+                Toast.makeText(this, "sucessfull", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "error", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        display.setOnClickListener{
+            val data=sqlitehelper.Display()
+            val adapter = ArrayAdapter(this,android.R.layout.simple_list_item_1,data)
+            listView.adapter = adapter
+        }
+
+	deletebtn.setOnClickListener{
+         val idtext = idTodelete.text.toString()
+            if (idtext.isNotEmpty())
+            {
+                val id =idtext.toInt()
+                val deleted = sqlitehelper.deleteStudent(id)
+                if(deleted)
+                {
+                    Toast.makeText(this, "Row Deleted succefully", Toast.LENGTH_SHORT).show()
+                }
+                else
+                {
+                    Toast.makeText(this, "Fail to deleted Row", Toast.LENGTH_SHORT).show()
+                }
+            }
+            else
+            {
+                Toast.makeText(this, "row is empty", Toast.LENGTH_SHORT).show()
+            }
+         }
+----------------------------------------------------------------------------------------------------------
+
+ setContentView(R.layout.login_activity)
+        val sqlitehelper = sqlitehelper(this)
+        val nameText:EditText = findViewById(R.id.name)
+        val emailText:EditText = findViewById(R.id.email)
+        val Loginbtn:Button=findViewById(R.id.Login)
+
+        Loginbtn.setOnClickListener{
+            val name = nameText.text.toString()
+            val email = emailText.text.toString()
+
+            if (name.isNotEmpty() && email.isNotEmpty())
+            {
+               if (sqlitehelper.checkuser(name ,email))
+               {
+                    Toast.makeText(this,"Login SuccessFull",Toast.LENGTH_SHORT).show()
+                   val intent=Intent(this,MainActivity::class.java)
+                   startActivity(intent)
+                   finish()
+               }
+               else
+               {
+                   Toast.makeText(this,"Login Fail",Toast.LENGTH_SHORT).show()
+               }
+            }
+            else
+            {
+                Toast.makeText(this,"Please Enter a Value",Toast.LENGTH_SHORT).show()
+            }
+
+        }
+
+
+    }
+}
+
