@@ -103,3 +103,24 @@ public IActionResult Logout()
     }
     return View();
 }
+
+
+
+
+
+--------
+public async Task<Teacher> GetTeacherById(int id)
+ {
+     var ResponseValue = await client.GetAsync(baseUrlTeacher + "/" + id.ToString());
+     var response = await ResponseValue.Content.ReadAsStringAsync();
+     var teacher = JsonConvert.DeserializeObject<Teacher>(response);
+     return teacher;
+ }
+
+ public async Task<IEnumerable<Teacher>> GetTeacherByName(string tname)
+ {
+     var ResponseValue = await client.GetAsync(baseUrlTeacher + "/designation/" + tname.ToString());
+     var response = await ResponseValue.Content.ReadAsStringAsync();
+     var teacher = JsonConvert.DeserializeObject<List<Teacher>>(response);
+     return teacher;
+ }
