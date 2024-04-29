@@ -244,3 +244,34 @@ class Login : AppCompatActivity() {
         })
     }
 }
+
+
+ val option = resources.getStringArray(R.array.spinner_option)
+
+        val data = listOf("Item 1", "Item 2", "Item 3")
+
+        val arraydapter = ArrayAdapter(this,android.R.layout.simple_spinner_item,option)
+
+        arraydapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        spinner.adapter = arraydapter
+
+
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                var selectedOption = parent?.getItemAtPosition(position).toString()
+
+                Toast.makeText(this@MainActivity,"Selected $selectedOption",Toast.LENGTH_LONG).show()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                /* TODO("Not yet implemented")*/
+            }
+        }
+        val selctop = spinner.selectedItem.toString()
+
