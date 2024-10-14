@@ -130,3 +130,98 @@ app.listen(PORT,()=>{
     </table>
 </body>
 </html>
+
+
+//...
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
+
+
+app.set('view engine', 'ejs');
+
+
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
+const users = {
+    'harsh@exam.com': 'password123' 
+};
+
+
+app.get('/login', (req, res) => {
+    res.render('login', { message: null });
+});
+
+
+app.post('/login', (req, res) => {
+    const { email, password } = req.body;
+
+
+    if (users[email] && users[email] === password) {
+        res.render('dashboard', { email });
+    } else {
+        res.render('login', { message: 'Invalid email or password' });
+    }
+});
+
+
+app.get('/dashboard', (req, res) => {
+    res.render('dashboard', { email: 'Unknown' });
+});
+
+
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+});
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .message {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Login</h1>
+    <% if (message) { %>
+        <p class="message"><%= message %></p>
+    <% } %>
+    <form action="/login" method="POST">
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required><br><br>
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password" required><br><br>
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Welcome, <%= email %>!</h1>
+    <p>You have successfully logged in.</p>
+    <a href="/login">Logout</a>
+</body>
+</html>
+
