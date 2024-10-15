@@ -478,4 +478,106 @@ def main():
 
 if __name__ == "__main__":
     main()
+..
+..
+class Car:
+    def __init__(self, make, model, year, price, available=True):
+        self.make = make
+        self.model = model
+        self.year = year
+        self.price = price
+        self.available = available
+
+    def display_info(self):
+        availability = "Available" if self.available else "Sold"
+        return f"{self.year} {self.make} {self.model} - ${self.price} ({availability})"
+
+
+class Showroom:
+    def __init__(self, name):
+        self.name = name
+        self.cars = []
+
+    def add_car(self, car):
+        self.cars.append(car)
+        print(f"Added {car.display_info()} to the showroom.")
+
+    def remove_car(self, index):
+        if 0 <= index < len(self.cars):
+            removed_car = self.cars.pop(index)
+            print(f"Removed {removed_car.display_info()} from the showroom.")
+        else:
+            print("Car index not found.")
+
+    def display_cars(self):
+        if not self.cars:
+            print("No cars available in the showroom.")
+            return
+        print(f"Cars available in {self.name}:")
+        for idx, car in enumerate(self.cars):
+            print(f"{idx}. {car.display_info()}")
+
+    def sell_car(self, index):
+        if 0 <= index < len(self.cars) and self.cars[index].available:
+            self.cars[index].available = False
+            print(f"Sold {self.cars[index].display_info()}.")
+        else:
+            print("Car not available for sale.")
+
+
+class Customer:
+    def __init__(self, name):
+        self.name = name
+
+
+def main():
+    showroom = Showroom("Super Cars")
+
+    while True:
+        print("\nCar Showroom Management System")
+        print("1. Add Car")
+        print("2. Display Cars")
+        print("3. Remove Car")
+        print("4. Sell Car")
+        print("5. Exit")
+        choice = input("Choose an option: ")
+
+        if choice == '1':
+            make = input("Enter car make: ")
+            model = input("Enter car model: ")
+            year = input("Enter car year: ")
+            price = float(input("Enter car price: "))
+            car = Car(make, model, year, price)
+            showroom.add_car(car)
+
+        elif choice == '2':
+            showroom.display_cars()
+
+        elif choice == '3':
+            showroom.display_cars()
+            try:
+                index = int(input("Enter the index of the car to remove: "))
+                showroom.remove_car(index)
+            except ValueError:
+                print("Please enter a valid index.")
+
+        elif choice == '4':
+            showroom.display_cars()
+            try:
+                index = int(input("Enter the index of the car to sell: "))
+                showroom.sell_car(index)
+            except ValueError:
+                print("Please enter a valid index.")
+
+        elif choice == '5':
+            print("Exiting the system. Goodbye!")
+            break
+
+        else:
+            print("Invalid choice. Please select again.")
+
+
+if __name__ == "__main__":
+    main()
+
 
