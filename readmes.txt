@@ -580,4 +580,98 @@ def main():
 if __name__ == "__main__":
     main()
 
+.....
 
+class CarCRUD:
+    def __init__(self):
+        self.cars = []
+
+    # Method to add a new car
+    def add_car(self):
+        car_id = input("Enter car ID: ")
+        make = input("Enter car make: ")
+        model = input("Enter car model: ")
+        year = input("Enter car year: ")
+
+        car = {
+            "id": car_id,
+            "make": make,
+            "model": model,
+            "year": year
+        }
+        self.cars.append(car)
+        print(f"Car {car_id} added successfully!\n")
+
+    # Method to display all cars
+    def display_cars(self):
+        if not self.cars:
+            print("No cars available.\n")
+            return
+        print("Current list of cars:")
+        for car in self.cars:
+            print(f"ID: {car['id']}, Make: {car['make']}, Model: {car['model']}, Year: {car['year']}")
+        print()
+
+    # Method to update a car by its ID
+    def update_car(self):
+        car_id = input("Enter car ID to update: ")
+
+        for car in self.cars:
+            if car['id'] == car_id:
+                new_make = input("Enter new car make (leave blank to keep current): ")
+                new_model = input("Enter new car model (leave blank to keep current): ")
+                new_year = input("Enter new car year (leave blank to keep current): ")
+
+                if new_make:
+                    car['make'] = new_make
+                if new_model:
+                    car['model'] = new_model
+                if new_year:
+                    car['year'] = new_year
+
+                print(f"Car {car_id} updated successfully!\n")
+                return
+        print(f"Car with ID {car_id} not found.\n")
+
+    # Method to delete a car by its ID
+    def delete_car(self):
+        car_id = input("Enter car ID to delete: ")
+
+        for car in self.cars:
+            if car['id'] == car_id:
+                self.cars.remove(car)
+                print(f"Car {car_id} deleted successfully!\n")
+                return
+        print(f"Car with ID {car_id} not found.\n")
+
+    # Method to interact with the user
+    def main_menu(self):
+        while True:
+            print("Car CRUD Menu:")
+            print("1. Add Car")
+            print("2. Display Cars")
+            print("3. Update Car")
+            print("4. Delete Car")
+            print("5. Exit")
+
+            choice = input("Enter your choice: ")
+
+            if choice == '1':
+                self.add_car()
+            elif choice == '2':
+                self.display_cars()
+            elif choice == '3':
+                self.update_car()
+            elif choice == '4':
+                self.delete_car()
+            elif choice == '5':
+                print("Exiting the program.")
+                break
+            else:
+                print("Invalid choice, please try again.\n")
+
+
+# Instantiate the CarCRUD class and start the program
+if __name__ == "__main__":
+    car_crud_app = CarCRUD()
+    car_crud_app.main_menu()
