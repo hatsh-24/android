@@ -21,7 +21,8 @@
 }
 
 //exampleservice
-
+@Inject
+Examplebean eb;
 @GET
     @Path("/getHello")
     @Produces(MediaType.TEXT_HTML)
