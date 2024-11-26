@@ -1,0 +1,433 @@
+//python
+def product_or_sum(num1, num2):
+    product = num1 * num2
+    if product > 1000:
+        return num1 + num2
+    return product
+
+def sum_of_current_previous():
+    previous_num = 0
+    for i in range(10):
+        sum_result = previous_num + i
+        print(f"Current number: {i}, Previous number: {previous_num}, Sum: {sum_result}")
+        previous_num = i
+
+def even_index_chars(input_string):
+    return input_string[::2]
+
+def check_first_last_same(input_list):
+    return input_list[0] == input_list[-1] if input_list else False
+
+def combine_odd_even(list1, list2):
+    odd_elements = list1[1::2]  
+    even_elements = list2[0::2]  
+    return odd_elements + even_elements
+
+def modify_list(input_list):
+    if len(input_list) > 4:
+        element = input_list.pop(4)
+        input_list.insert(2, element)
+        input_list.append(element)
+    return input_list
+
+def slice_and_reverse(input_list):
+    chunk_size = len(input_list) // 3
+    chunks = [input_list[i:i + chunk_size] for i in range(0, len(input_list), chunk_size)]
+    return [chunk[::-1] for chunk in chunks]
+
+def count_occurrences(input_list):
+    count_dict = {}
+    for item in input_list:
+        count_dict[item] = count_dict.get(item, 0) + 1
+    return count_dict
+
+def add_list_to_set(given_set, input_list):
+    given_set.update(input_list)
+    return given_set
+
+def print_pattern():
+    for i in range(1, 6):
+        for j in range(1, i+1):
+            print(j, end=" ")
+        print()
+
+def sum_upto_n(n):
+    return sum(range(1, n+1))
+
+def divisible_by_five(input_list):
+    for num in input_list:
+        if num > 150:
+            break
+        if num % 5 == 0:
+            print(num)
+
+def reverse_list(input_list):
+    reversed_list = []
+    for i in range(len(input_list)-1, -1, -1):
+        reversed_list.append(input_list[i])
+    return reversed_list
+
+def prime_numbers_in_range(start, end):
+    primes = []
+    for num in range(start, end+1):
+        if num > 1:  
+            for i in range(2, int(num**0.5)+1):
+                if num % i == 0:
+                    break
+            else:
+                primes.append(num)
+    return primes
+
+print(product_or_sum(20, 50)) 
+print(product_or_sum(40, 30))  
+sum_of_current_previous()
+print(even_index_chars("hello"))  
+print(check_first_last_same([10, 20, 30, 10])) 
+print(check_first_last_same([10, 20, 30, 40]))  
+print(combine_odd_even([10, 20, 30, 40], [1, 2, 3, 4]))  
+print(modify_list([1, 2, 3, 4, 5, 6])) 
+print(slice_and_reverse([1, 2, 3, 4, 5, 6, 7, 8, 9]))  
+print(count_occurrences([10, 20, 10, 30, 10])) 
+print(add_list_to_set({'yellow', 'orange'}, ['blue', 'black']))  
+print_pattern()
+print(sum_upto_n(5)) 
+divisible_by_five([10, 25, 35, 200, 50]) 
+print(reverse_list([10, 20, 30, 40]))  
+print(prime_numbers_in_range(10, 50))  
+
+
+//pnd
+import pandas as pd
+import os
+
+csv_file = 'users.csv'
+
+def add_user():
+    name = input("Enter name: ")
+    email = input("Enter email: ")
+
+    file_exists = os.path.isfile(csv_file)
+ 
+    df = pd.DataFrame([[name, email]], columns=['Name', 'Email'])
+    df.to_csv(csv_file, mode='a', header=not file_exists, index=False)
+    print(f"User {name} added.")
+
+def read_users():
+    if os.path.exists(csv_file):
+        df = pd.read_csv(csv_file)
+        print("\nCurrent Users in CSV:\n", df)
+    else:
+        print("No users found, CSV file does not exist yet.")
+def update_user():
+    if os.path.exists(csv_file):
+        df = pd.read_csv(csv_file)
+        name_to_update = input("Enter the name of the user to update: ")
+        
+        if name_to_update in df['Name'].values:
+            new_email = input("Enter new email: ")
+            df.loc[df['Name'] == name_to_update, 'Email'] = new_email
+            df.to_csv(csv_file, index=False)
+            print(f"User {name_to_update} updated.")
+        else:
+            print(f"User {name_to_update} not found.")
+    else:
+        print("CSV file not found, no users to update.")
+
+def main():
+    while True:
+        print("\n1. Add User\n2. Read Users\n3. Update User\n4. Exit")
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            add_user()
+        elif choice == '2':
+            read_users()
+        elif choice == '3':
+            update_user()
+        elif choice == '4':
+            print("Exiting...")
+            break
+        else:
+            print("Invalid choice, try again.")
+
+if __name__ == "__main__":
+    main()
+
+
+//csv
+import csv
+import os
+
+def write_to_csv(filename, name, email):
+    with open(filename, mode='a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([name, email])
+    print(f"Data written to {filename}: Name: {name}, Email: {email}")
+
+def read_from_csv(filename):
+    if not os.path.exists(filename):
+        print("File not found.")
+        return []
+    
+    with open(filename, mode='r') as file:
+        reader = csv.reader(file)
+        data = list(reader)
+        print("Current data in the CSV file:")
+        for row in data:
+            print(f"Name: {row[0]}, Email: {row[1]}")
+    return data
+
+def update_csv(filename, old_name, new_name, new_email):
+    updated_data = []
+    found = False
+
+    with open(filename, mode='r') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if row[0] == old_name:
+                updated_data.append([new_name, new_email])
+                found = True
+                print(f"Updated {old_name} to {new_name} with email {new_email}.")
+            else:
+                updated_data.append(row)
+
+    if not found:
+        print(f"{old_name} not found in the CSV file.")
+
+    with open(filename, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(updated_data)
+
+def main():
+    filename = 'user_data.csv'
+    
+
+    name = input("Enter your name: ")
+    email = input("Enter your email: ")
+    write_to_csv(filename, name, email)
+
+    read_from_csv(filename)
+
+    update_choice = input("Do you want to update an entry? (yes/no): ").strip().lower()
+    if update_choice == 'yes':
+        old_name = input("Enter the name you want to update: ")
+        new_name = input("Enter the new name: ")
+        new_email = input("Enter the new email: ")
+        update_csv(filename, old_name, new_name, new_email)
+
+        read_from_csv(filename)
+
+if __name__ == "__main__":
+    main()
+
+
+
+//bank
+import csv
+
+# Base class
+class BankAccount:
+    def __init__(self, account_number, name, initial_deposit):
+        self.account_number = account_number
+        self.name = name
+        self.balance = initial_deposit
+
+    def deposit(self, amount):
+        self.balance += amount
+        print(f"Deposited {amount}. New balance: {self.balance}")
+
+    def withdraw(self, amount):
+        if amount > self.balance:
+            print("Insufficient balance.")
+        else:
+            self.balance -= amount
+            print(f"Withdrew {amount}. New balance: {self.balance}")
+
+    def check_balance(self):
+        print(f"Account Balance for {self.name}: {self.balance}")
+
+# Inherited class for Savings Account
+class SavingsAccount(BankAccount):
+    interest_rate = 6.5  # Annual interest rate
+
+    def __init__(self, account_number, name, initial_deposit):
+        super().__init__(account_number, name, initial_deposit)
+
+    def apply_interest(self):
+        interest = self.balance * (SavingsAccount.interest_rate / 100)
+        self.balance += interest
+        print(f"Interest applied. New balance: {self.balance}")
+
+# Inherited class for Current Account with different types
+class CurrentAccount(BankAccount):
+    def __init__(self, account_number, name, initial_deposit, program_type):
+        super().__init__(account_number, name, initial_deposit)
+        self.program_type = program_type
+        self.balance_requirement = self.set_balance_requirement(program_type)
+        self.interest_rate = "NA"  # No interest for current accounts
+
+    def set_balance_requirement(self, program_type):
+        if program_type == 'Premium':
+            return 500000
+        elif program_type == 'Zero2One':
+            return 100000
+
+    def check_balance_requirement(self):
+        if self.balance < self.balance_requirement:
+            print(f"Balance below required minimum of {self.balance_requirement}.")
+        else:
+            print(f"Balance requirement met. Current balance: {self.balance}")
+
+# Class to manage Bank operations
+class Bank:
+    def __init__(self):
+        self.accounts = []
+
+    def add_account(self, account):
+        self.accounts.append(account)
+        self.save_to_csv()
+        print(f"Account added for {account.name}.")
+
+    def delete_account(self, account_number):
+        self.accounts = [account for account in self.accounts if account.account_number != account_number]
+        self.save_to_csv()
+        print(f"Account {account_number} deleted.")
+
+    def update_account(self, account_number, name=None, deposit=None):
+        for account in self.accounts:
+            if account.account_number == account_number:
+                if name:
+                    account.name = name
+                if deposit:
+                    account.balance = deposit
+                print(f"Account {account_number} updated.")
+                self.save_to_csv()
+                return
+        print(f"Account {account_number} not found.")
+
+    def save_to_csv(self):
+        with open('bank_accounts.csv', 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['Account Number', 'Name', 'Balance', 'Account Type'])
+            for account in self.accounts:
+                if isinstance(account, SavingsAccount):
+                    writer.writerow([account.account_number, account.name, account.balance, 'Savings'])
+                elif isinstance(account, CurrentAccount):
+                    writer.writerow([account.account_number, account.name, account.balance, 'Current', account.program_type])
+
+# Main logic to interact with users
+def main():
+    bank = Bank()
+
+    while True:
+        print("\n1. Add Account\n2. Delete Account\n3. Update Account\n4. Check Balance\n5. Deposit\n6. Withdraw\n7. Exit")
+        choice = int(input("Enter your choice: "))
+
+        if choice == 1:
+            account_type = input("Enter account type (Savings/Current): ").strip().lower()
+            account_number = input("Enter account number: ")
+            name = input("Enter account holder name: ")
+            initial_deposit = float(input("Enter initial deposit: "))
+
+            if account_type == 'savings':
+                account = SavingsAccount(account_number, name, initial_deposit)
+            elif account_type == 'current':
+                program_type = input("Enter program type (Premium/Zero2One): ").strip()
+                account = CurrentAccount(account_number, name, initial_deposit, program_type)
+            else:
+                print("Invalid account type.")
+                continue
+
+            bank.add_account(account)
+
+        elif choice == 2:
+            account_number = input("Enter account number to delete: ")
+            bank.delete_account(account_number)
+
+        elif choice == 3:
+            account_number = input("Enter account number to update: ")
+            name = input("Enter new name (or press Enter to skip): ")
+            deposit = input("Enter new deposit (or press Enter to skip): ")
+            deposit = float(deposit) if deposit else None
+            bank.update_account(account_number, name, deposit)
+
+        elif choice == 4:
+            account_number = input("Enter account number: ")
+            for account in bank.accounts:
+                if account.account_number == account_number:
+                    account.check_balance()
+                    break
+            else:
+                print(f"Account {account_number} not found.")
+
+        elif choice == 5:
+            account_number = input("Enter account number: ")
+            amount = float(input("Enter amount to deposit: "))
+            for account in bank.accounts:
+                if account.account_number == account_number:
+                    account.deposit(amount)
+                    break
+            else:
+                print(f"Account {account_number} not found.")
+
+        elif choice == 6:
+            account_number = input("Enter account number: ")
+            amount = float(input("Enter amount to withdraw: "))
+            for account in bank.accounts:
+                if account.account_number == account_number:
+                    account.withdraw(amount)
+                    break
+            else:
+                print(f"Account {account_number} not found.")
+
+        elif choice == 7:
+            print("Exiting...")
+            break
+
+        else:
+            print("Invalid choice. Try again.")
+
+if __name__ == "__main__":
+    main()
+
+
+
+//plot
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
+
+from sklearn.metrics import mean_squared_error, r2_score
+
+# Load the data
+raw_data= pd.read_csv('E:\\study\\PYTHON\\assi -3\\linear.csv')
+
+# Remove rows with NaN in 'y' column
+filtered_data = raw_data[~np.isnan(raw_data["y"])]
+print(filtered_data.head(6))
+
+# Extract x (the independent variable) and y (the dependent variable)
+x = filtered_data.iloc[:, 0].values.reshape(-1, 1)  # First column
+y = filtered_data.iloc[:, 1].values.reshape(-1, 1)  # Second column
+
+# Create the Linear Regression object
+lin_regression = LinearRegression()
+
+# Fit the model to the data
+lin_regression.fit(x, y)
+
+# Get the slope (coefficient) and intercept of the line
+m = lin_regression.coef_
+b = lin_regression.intercept_
+
+print("Slope (m):", m)
+print("Intercept (b):", b)
+
+# Make predictions for the original x values
+predictions = lin_regression.predict(x)
+
+# Plot the data and the fitted line
+plt.scatter(x, y, color='black')
+plt.plot(x, predictions, color='blue', linewidth=3)
+plt.show()
