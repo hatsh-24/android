@@ -65,6 +65,7 @@ public Response deleteUser(@PathParam("id") int id) {
 apiUrl/mp-rest/url= http://localhost:8085/ResourceApp/rest/example
 
 //interface
+@RegisterRestClient(conigKey = apiUrl)
 // Method to get all users
     @GET
     @Path("/getUsers")
