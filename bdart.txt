@@ -1,0 +1,49 @@
+example service:-
+
+@GET
+@Path("/gethello")
+@produces(Mediatype.TEXT_HTML)
+
+public String getHello()
+	{
+	    return "<h1>hello , boy<h1>"; 
+	}
+/resourceapp/rest/example/getgello
+
+
+clientapp:-
+source package :javainterface-interface/exampleinterface
+
+service copy paste 
+remove body
+public String getHello() like only this
+
+other Sources/src/main/recources META-INF -> properti files :- microprofile-config
+
+ 
+microprofile-config:-
+
+apiURL/mp-rest/url = url => /resourceapp/rest/example
+
+exampleinterface:-
+
+@RegisterRestClient{configKey="apiUrl"}
+uper
+public interface
+
+
+source pachage servlet:-exampleservlater
+
+@inject
+@restClient
+Exampleinterface ei
+
+
+call->out.print....at + ei.gethello() + </h1>"}
+
+run  clinetapp/exampleServlet 
+
+url
+servername localhost
+passworduser root
+driverclass
